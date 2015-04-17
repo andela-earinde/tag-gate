@@ -1,0 +1,32 @@
+{
+  "name": "tag-gate",
+  "version": "1.0.0",
+  "description": "Gate way to handle request from the client to the two service",
+  "main": "server.js",
+  "scripts": {
+    "test": "none",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andela-earinde/tag-gate.git"
+  },
+  "keywords": [
+    "none"
+  ],
+  "author": "Arinde Eniola <eniola.arinde@andela.co>",
+  "license": "none",
+  "bugs": {
+    "url": "https://github.com/andela-earinde/tag-gate/issues"
+  },
+  "homepage": "https://github.com/andela-earinde/tag-gate",
+  "dependencies": {
+    "body-parser": "^1.12.3",
+    "express": "^4.12.3",
+    "jasmine-node": "^1.14.5",
+    "method-override": "^2.3.2",
+    "morgan": "^1.5.2",
+    "request": "^2.55.0",
+    "supertest": "^0.15.0"
+  }
+}
