@@ -4,11 +4,20 @@ var index = require('../controllers/controller');
 
 module.exports = function(app) {
    
-    router.post('users/signup', index.signup);
-    router.post('users/login', index.login);
-    router.post("")
+    router.post('/users/signup', index.signup);
+    router.post('/users/login', index.login);
+    router.get("/users/:name", index.retreiveUsers);
+    //create tag
+    router.route("/users/tag/:name")
+    .put(index.editTag);
 
-    app.use('/', router);
+    router.post("/users/tag", index.createTag);
+    //retreive all the tags belongin to a user, requires webtoken
+    router.get("/users/tag", index.getUserTags);
+
+    router.get("/tags/:name", index.retreiveTags);
+
+    app.use('', router);
 
     //catch 404 and forward to error handler
     app.use(function(req, res, next) {
