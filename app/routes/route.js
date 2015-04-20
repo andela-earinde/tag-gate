@@ -3,17 +3,24 @@ var router = express.Router();
 var index = require('../controllers/controller');
 
 module.exports = function(app) {
+   /*
+    *  This routing is shit: Update it!!!!!
+    */
    
     router.post('/users/signup', index.signup);
     router.post('/users/login', index.login);
     router.get("/users/:name", index.retreiveUsers);
+    router.put("/users/edit", index.editUserAccount);
+    router.delete("/users/delete", index.deleteUserAccount);
     //create tag
+   
+    router.route("/users/tag")
+    .post(index.createTag);
+
+    router.get("/user/tags/:name",index.getUserTag);
+
     router.route("/users/tag/:name")
     .put(index.editTag);
-
-    router.post("/users/tag", index.createTag);
-    //retreive all the tags belongin to a user, requires webtoken
-    router.get("/users/tag", index.getUserTags);
 
     router.get("/tags/:name", index.retreiveTags);
 

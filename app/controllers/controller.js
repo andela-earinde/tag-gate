@@ -46,6 +46,108 @@ exports.retreiveUsers = function(req, res) {
 	}
 }
 
+//edit users account
+exports.editUserAccount = function(req, res) {
+	jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
+	    if(err) {
+	        res.json({error: "invalid Token"});
+	    }
+	    else {
+	    	req.body.inituser = payload.username;
+	        request.put({url: config.url.allUsers+"/edit",
+                  form: req.body}, function(err, httpres, body) {
+                    if(err) {
+                  		console.log(err);
+                  	}
+                  	else{
+                        var body = JSON.parse(body);
+                        //request to mongoose for name change here
+                        if(body.error) {
+                        	res.json({error: "Invalid credential"});
+                        }
+                        else{
+	                        request.put({url: config.tagurl.allTags,
+	                            form: {
+					              	username: req.body.inituser,				        
+					              	author: req.body.username
+					              }}, function(err, httpres, monBody) {
+					                  	 if(err) {
+					                  	 	console.log(err);
+					                  	 }
+					                     else {
+					                         var monBody = JSON.parse(monBody);
+					                         res.json({
+					                         	postgres: body,
+					                         	mongo: monBody
+					                         });	
+					                     }
+	                        });
+	                    }
+                  	}
+                });	
+	    }
+	});
+}
+
+//retrieve all the tags belonging to a user
+exports.getUserTag = function(req, res) {
+   
+     request.get({url: config.tagurl.allTags+"/user/"+req.params.name},
+        	      function(err, httpres, body) {
+                    if(err) {
+                  		console.log(err);
+                  	}
+                  	else{
+                        var body = JSON.parse(body);
+                        res.json(body);
+                  	}
+                  });	        
+}
+
+//delete user account, requires a token
+exports.deleteUserAccount = function(req, res) {
+    jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
+		if(err) {
+            res.json({error: "Invalid Token"});
+		}
+		else {
+            request.del({url: config.url.allUsers+"/delete",
+		              form: {
+		              	username: payload.username
+		              }}, function(err, httpres, body) {
+		              	 if(err) {
+		              	 	console.log(err);
+		              	 }
+		                 else {
+		                     var body = JSON.parse(body);
+		                     if(body.error) {
+		                     	res.json({error: "Invalid credentials"});
+		                     }
+		                     else {
+		                          request.del({url: config.tagurl.allTags+"/user/"+payload.username,
+			                            form: {
+							              	username: req.body.inituser,				        
+							              	author: req.body.username
+							              }}, function(err, httpres, monBody) {
+							                  	 if(err) {
+							                  	 	console.log(err);
+							                  	 }
+							                     else {
+							                         var monBody = JSON.parse(monBody);
+							                         res.json({
+							                         	postgres: body,
+							                         	mongo: monBody
+							                         });	
+							                     }
+			                        });   
+		                     }	
+		                 }
+		    });
+		}
+	});	
+}
+
+//retrieve all tags in the database
 exports.retreiveTags = function(req, res) {
 	if(req.params.name === "all") {
         request.get({url: config.tagurl.allTags},
@@ -59,11 +161,15 @@ exports.retreiveTags = function(req, res) {
 	}
 }
 
+//create a new tag, requires a token
 exports.createTag = function(req, res) {
-	try{
-		var payload = jwt.verify(req.headers.authorization, "elvongray");
-
-		request.post({url: config.tagurl.allTags,
+	
+	jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
+		if(err) {
+            res.json({error: "Invalid Token"});
+		}
+		else {
+            request.post({url: config.tagurl.allTags,
 		              form: {
 		              	tagName: req.body.tagName,
 		              	description: req.body.description,
@@ -76,23 +182,20 @@ exports.createTag = function(req, res) {
 		                     var body = JSON.parse(body);
 		                     res.json(body);	
 		                 }
-		              });	   
-    }
-    catch(err) {
-    	if(err.name === "JsonWebTokenError"){
-    	     res.json({error: "Invalid token"});
-    	}
-    	else{
-    		throw err;
-    	}
-    }
+		    });
+		}
+	});
 }
 
+//edit a particular tag, requires a token
 exports.editTag = function(req, res) {
-	try {
-      var payload = jwt.verify(req.headers.authorization, "elvongray");
 
-      request.put({url: config.tagurl.allTags+"/"+req.params.name,
+      jwt.verify(req.headers.authorization, "elvongray", function(err, payload){
+          if(err) {
+              res.json({error: "Invalid Token"});
+          }
+          else {
+              request.put({url: config.tagurl.allTags+"/"+req.params.name,
                   form: {
                   	tagName: req.body.tagName,
                   	description: req.body.description,
@@ -105,17 +208,9 @@ exports.editTag = function(req, res) {
                          var body = JSON.parse(body);
                          res.json(body);	
                      }
-                  });	
-	}
-	catch(err) {
-	    if(err.name === "JsonWebTokenError"){
-    	     res.json({error: "Invalid token"});
-    	}
-    	else{
-    		throw err;
-    	}	
-	}
-   
+                  });
+          }
+      });	
 }
 
 
