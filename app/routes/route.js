@@ -9,19 +9,24 @@ module.exports = function(app) {
    
     router.post('/users/signup', index.signup);
     router.post('/users/login', index.login);
+    router.post('/users/signout', index.signout);
     router.get("/users/:name", index.retreiveUsers);
     router.put("/users/edit", index.editUserAccount);
     router.delete("/users/delete", index.deleteUserAccount);
     //create tag
    
     router.route("/users/tag")
-    .post(index.createTag);
-
+    .post(index.createTag)//create new post
+    .delete(index.deleteUserTag); //delete a single tag of a user
+    
+    //get a single tag from a user
     router.get("/user/tags/:name",index.getUserTag);
-
+    
+    //edit a users tag
     router.route("/users/tag/:name")
     .put(index.editTag);
-
+    
+    //retreive all the tags in the database
     router.get("/tags/:name", index.retreiveTags);
 
     app.use('', router);

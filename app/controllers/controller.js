@@ -15,6 +15,26 @@ exports.signup = function(req, res) {
                   });
 }
 
+exports.signout = function(req, res) {
+    jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
+    	if(err) {
+    		res.json({error: "Invalid Token"});
+    	}
+    	else {
+    	    request.post({url: config.url.allUsers+"/signout",
+                  form: {username: payload.username}}, function(err, httpres, body) {
+                  	if(err) {
+                  		console.log(err);
+                  	}
+                  	else{
+                        var body = JSON.parse(body);
+                        res.json(body);
+                  	}
+                });	
+    	}
+    });
+}
+
 exports.login = function(req, res) {
      request.post({url: config.url.login,
                   form: req.body}, function(err, httpres, body) {
@@ -145,6 +165,29 @@ exports.deleteUserAccount = function(req, res) {
 		    });
 		}
 	});	
+}
+
+//delete a user tag
+exports.deleteUserTag = function(req, res) {
+     jwt.verify(req.headers.authorization, "elvongray", function(err, payload){
+          if(err) {
+              res.json({error: "Invalid Token"});
+          }
+          else {
+              request.del({url: config.tagurl.allTags+"/user"+req.body.tagName,
+                  form: {
+                  	author: payload.username
+                  }}, function(err, httpres, body) {
+                  	 if(err) {
+                  	 	console.log(err);
+                  	 }
+                     else {
+                         var body = JSON.parse(body);
+                         res.json(body);	
+                     }
+                  });
+          }
+      });		
 }
 
 //retrieve all tags in the database
