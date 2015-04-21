@@ -6,7 +6,8 @@ module.exports = function(app) {
    /*
     *  This routing is shit: Update it!!!!!
     */
-   
+    
+    router.get('/users', index.getSingleUser)
     router.post('/users/signup', index.signup);
     router.post('/users/login', index.login);
     router.post('/users/signout', index.signout);

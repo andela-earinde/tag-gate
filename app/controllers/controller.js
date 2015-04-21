@@ -16,23 +16,26 @@ exports.signup = function(req, res) {
 }
 
 exports.signout = function(req, res) {
-    jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
-    	if(err) {
-    		res.json({error: "Invalid Token"});
-    	}
-    	else {
-    	    request.post({url: config.url.allUsers+"/signout",
-                  form: {username: payload.username}}, function(err, httpres, body) {
-                  	if(err) {
-                  		console.log(err);
-                  	}
-                  	else{
-                        var body = JSON.parse(body);
-                        res.json(body);
-                  	}
-                });	
-    	}
-    });
+	request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+				    request.post({url: config.url.allUsers+"/signout",
+			              form: {username: payload.username}}, function(err, httpres, body) {
+			              	if(err) {
+			              		console.log(err);
+			              	}
+			              	else{
+			                    var body = JSON.parse(body);
+			                    res.json(body);
+			              	}
+			            });	
+	           }
+	       });
 }
 
 exports.login = function(req, res) {
@@ -66,47 +69,73 @@ exports.retreiveUsers = function(req, res) {
 	}
 }
 
+exports.getSingleUser = function(req, res) {
+    request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+				    request.get({url: config.url.allUsers+"/"+payload.username},
+			              function(err, httpres, body) {
+			              	if(err) {
+			              		console.log(err);
+			              	}
+			              	else{
+			                    var body = JSON.parse(body);
+			                    res.json(body);
+			              	}
+			            });	
+	           }
+	       });	
+}
+
 //edit users account
 exports.editUserAccount = function(req, res) {
-	jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
-	    if(err) {
-	        res.json({error: "invalid Token"});
-	    }
-	    else {
-	    	req.body.inituser = payload.username;
-	        request.put({url: config.url.allUsers+"/edit",
-                  form: req.body}, function(err, httpres, body) {
-                    if(err) {
-                  		console.log(err);
-                  	}
-                  	else{
-                        var body = JSON.parse(body);
-                        //request to mongoose for name change here
-                        if(body.error) {
-                        	res.json({error: "Invalid credential"});
-                        }
-                        else{
-	                        request.put({url: config.tagurl.allTags,
-	                            form: {
-					              	username: req.body.inituser,				        
-					              	author: req.body.username
-					              }}, function(err, httpres, monBody) {
-					                  	 if(err) {
-					                  	 	console.log(err);
-					                  	 }
-					                     else {
-					                         var monBody = JSON.parse(monBody);
-					                         res.json({
-					                         	postgres: body,
-					                         	mongo: monBody
-					                         });	
-					                     }
-	                        });
-	                    }
-                  	}
-                });	
-	    }
-	});
+    request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+			       req.body.inituser = payload.username;
+			        request.put({url: config.url.allUsers+"/edit",
+		                  form: req.body}, function(err, httpres, body) {
+		                    if(err) {
+		                  		console.log(err);
+		                  	}
+		                  	else{
+		                        var body = JSON.parse(body);
+		                        //request to mongoose for name change here
+		                        if(body.error) {
+		                        	res.json({error: "Invalid credential"});
+		                        }
+		                        else{
+			                        request.put({url: config.tagurl.allTags,
+			                            form: {
+							              	username: req.body.inituser,				        
+							              	author: req.body.username
+							              }}, function(err, httpres, monBody) {
+							                  	 if(err) {
+							                  	 	console.log(err);
+							                  	 }
+							                     else {
+							                         var monBody = JSON.parse(monBody);
+							                         res.json({
+							                         	postgres: body,
+							                         	mongo: monBody
+							                         });	
+							                     }
+			                        });
+			                    }
+		                  	}
+		                });		    
+	           }
+	       });
 }
 
 //retrieve all the tags belonging to a user
@@ -126,12 +155,15 @@ exports.getUserTag = function(req, res) {
 
 //delete user account, requires a token
 exports.deleteUserAccount = function(req, res) {
-    jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
-		if(err) {
-            res.json({error: "Invalid Token"});
-		}
-		else {
-            request.del({url: config.url.allUsers+"/delete",
+    request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+			         request.del({url: config.url.allUsers+"/delete",
 		              form: {
 		              	username: payload.username
 		              }}, function(err, httpres, body) {
@@ -162,32 +194,35 @@ exports.deleteUserAccount = function(req, res) {
 			                        });   
 		                     }	
 		                 }
-		    });
-		}
-	});	
+		           });    
+	           }
+	       });
 }
 
 //delete a user tag
 exports.deleteUserTag = function(req, res) {
-     jwt.verify(req.headers.authorization, "elvongray", function(err, payload){
-          if(err) {
-              res.json({error: "Invalid Token"});
-          }
-          else {
-              request.del({url: config.tagurl.allTags+"/user"+req.body.tagName,
-                  form: {
-                  	author: payload.username
-                  }}, function(err, httpres, body) {
-                  	 if(err) {
-                  	 	console.log(err);
-                  	 }
-                     else {
-                         var body = JSON.parse(body);
-                         res.json(body);	
-                     }
-                  });
-          }
-      });		
+	request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               		       
+	              request.del({url: config.tagurl.allTags+"/user"+req.body.tagName,
+	                  form: {
+	                  	author: payload.username
+	                  }}, function(err, httpres, body) {
+	                  	 if(err) {
+	                  	 	console.log(err);
+	                  	 }
+	                     else {
+	                         var body = JSON.parse(body);
+	                         res.json(body);	
+	                     }
+	                  });    
+	           }	       
+	});		
 }
 
 //retrieve all tags in the database
@@ -206,13 +241,15 @@ exports.retreiveTags = function(req, res) {
 
 //create a new tag, requires a token
 exports.createTag = function(req, res) {
-	
-	jwt.verify(req.headers.authorization, "elvongray", function(err, payload) {
-		if(err) {
-            res.json({error: "Invalid Token"});
-		}
-		else {
-            request.post({url: config.tagurl.allTags,
+	request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+				    request.post({url: config.tagurl.allTags,
 		              form: {
 		              	tagName: req.body.tagName,
 		              	description: req.body.description,
@@ -225,36 +262,39 @@ exports.createTag = function(req, res) {
 		                     var body = JSON.parse(body);
 		                     res.json(body);	
 		                 }
-		    });
-		}
-	});
+		           });    
+	           }
+	    });
 }
 
 //edit a particular tag, requires a token
 exports.editTag = function(req, res) {
-
-      jwt.verify(req.headers.authorization, "elvongray", function(err, payload){
-          if(err) {
-              res.json({error: "Invalid Token"});
-          }
-          else {
-              request.put({url: config.tagurl.allTags+"/"+req.params.name,
-                  form: {
-                  	tagName: req.body.tagName,
-                  	description: req.body.description,
-                  	author: payload.username
-                  }}, function(err, httpres, body) {
-                  	 if(err) {
-                  	 	console.log(err);
-                  	 }
-                     else {
-                         var body = JSON.parse(body);
-                         res.json(body);	
-                     }
-                  });
-          }
-      });	
+    request.post({url: config.url.allUsers+"/auth",
+	      form: {authorization: req.headers.authorization}},
+	       function(err, httpres, payload){
+	           var payload = JSON.parse(payload);
+	           if(payload.error) {
+	               res.json(payload);
+	           }
+	           else {	               
+			       request.put({url: config.tagurl.allTags+"/"+req.params.name,
+	                  form: {
+	                  	tagName: req.body.tagName,
+	                  	description: req.body.description,
+	                  	author: payload.username
+	                  }}, function(err, httpres, body) {
+	                  	 if(err) {
+	                  	 	console.log(err);
+	                  	 }
+	                     else {
+	                         var body = JSON.parse(body);
+	                         res.json(body);	
+	                     }
+	                });    
+	           }
+	});             
 }
+
 
 
 
