@@ -18,11 +18,8 @@ describe("Route Test: Testing if the gateway works properly", function() {
                 console.log(err);
             }
             console.log("created")
-        });
-         setTimeout(function(){
-                    done();
-         }, 5000); 
-    }, 6000);
+        }); 
+    });
 
     afterEach(function(done) {
         req.post({url: config.url.remove, form: {
@@ -32,11 +29,8 @@ describe("Route Test: Testing if the gateway works properly", function() {
                 console.log(err);
             }
             console.log("deleted");
-        });
-         setTimeout(function(){
-                    done();
-         }, 5000)    
-    }, 6000);
+        }); 
+    });
     
 	describe("it should signup the user when POST /users/signup route is called", function() {
         it("should request the user service and and return success when succesful", function(done) {
@@ -59,10 +53,7 @@ describe("Route Test: Testing if the gateway works properly", function() {
                 		success: "User created"
                 	}));
                 });
-                setTimeout(function(){
-                    done();
-                }, 5000);
-        }, 6000);
+        });
     });
 
     describe("It should login the user when POST /users/login route is called", function() {   
@@ -84,11 +75,8 @@ describe("Route Test: Testing if the gateway works properly", function() {
                         username: "eniola",
                         email: "eni@arinde"
                     }));
-                })
-                 setTimeout(function(){
-                    done();
-                }, 5000); 
-        }, 6000);
+                }) 
+        });
     });
 });
 
