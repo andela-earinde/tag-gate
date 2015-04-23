@@ -11,7 +11,7 @@ module.exports = {
   },
 
   corsOptions: {
-    origin: "https://tag-gate.herokuapp.com",
+    origin: " http://andela-earinde.github.io/tag-client",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   }
