@@ -11,7 +11,7 @@ module.exports = {
   },
 
   corsOptions: {
-    origin: "http://localhost:8000",
+    origin: "https://tag-gate.herokuapp.com",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   }
