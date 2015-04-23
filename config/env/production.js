@@ -11,7 +11,7 @@ module.exports = {
   },
 
   corsOptions: {
-    origin: " http://andela-earinde.github.io/tag-client",
+    origin: "http://localhost:8000/",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   }
