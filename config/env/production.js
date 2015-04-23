@@ -11,7 +11,7 @@ module.exports = {
   },
 
   corsOptions: {
-    origin: "http://localhost:8000/",
+    origin: "http://andela-earinde.github.io",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   }
