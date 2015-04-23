@@ -1,13 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var index = require('../controllers/controller');
+var cors = require("cors");
+var config = require("../../config/config");
 
 module.exports = function(app) {
    /*
     *  This routing is shit: Update it!!!!!
     */
     
-    router.get('/users', index.getSingleUser)
+    router.get('/users', index.getSingleUser);
     router.post('/users/signup', index.signup);
     router.post('/users/login', index.login);
     router.post('/users/signout', index.signout);
@@ -17,7 +19,7 @@ module.exports = function(app) {
     //create tag
    
     router.route("/users/tag")
-    .post(index.createTag)//create new post
+    .post(index.createTag)//create new tag
     .delete(index.deleteUserTag); //delete a single tag of a user
     
     //get a single tag from a user
@@ -29,6 +31,9 @@ module.exports = function(app) {
     
     //retreive all the tags in the database
     router.get("/tags/:name", index.retreiveTags);
+
+    app.use(cors(config.corsOptions));
+    app.options('*', cors(config.corsOptions));
 
     app.use('', router);
 

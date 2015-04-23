@@ -8,5 +8,11 @@ module.exports = {
 
 	tagurl: {
 		allTags: "http://localhost:8080/api/tags"
+	},
+
+	corsOptions: {
+		origin: "http://localhost:8000",
+		methods: ["GET", "POST", "PUT", "DELETE"],
+		allowedHeaders: ["Content-Type", "Authorization"]
 	}
 }

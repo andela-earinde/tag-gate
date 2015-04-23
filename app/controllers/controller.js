@@ -208,8 +208,9 @@ exports.deleteUserTag = function(req, res) {
 	           if(payload.error) {
 	               res.json(payload);
 	           }
-	           else {	               		       
-	              request.del({url: config.tagurl.allTags+"/user"+req.body.tagName,
+	           else {	    
+                console.log(req.body.tagName);           		       
+	              request.del({url: config.tagurl.allTags+"/"+req.body.tagName,
 	                  form: {
 	                  	author: payload.username
 	                  }}, function(err, httpres, body) {
